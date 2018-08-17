@@ -1,0 +1,20 @@
+---
+title: "The Basic Joint Model"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+## load packages
+library(survival)
+library(JMbayes)
+    
+lmeFit <- lme(CD4 ~ obstime + obstime:drug,
+              random = ~ obstime | patient, data = aids)
+
+coxFit <- coxph(Surv(Time, death) ~ drug + gender, data = aids.id, x = TRUE)
+
+jointFit <- jointModelBayes(lmeFit, coxFit, timeVar = "obstime",
+                            baseHaz = c("P-splines"), verbose = FALSE)
+summary(jointFit)
+```

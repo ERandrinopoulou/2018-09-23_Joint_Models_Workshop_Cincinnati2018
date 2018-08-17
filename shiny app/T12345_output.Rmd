@@ -1,0 +1,30 @@
+---
+title: "T1 + T2 + T3 + T4 + T5"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+## load packages
+library(JMbayes)
+    
+# Fit a multivariate mixed effects model
+multMixedFit <- mvglmer(list(log(serBilir) ~ year * drug + (year | id),
+                             hepatomegaly ~ year * drug + (year | id)), data = pbc2,
+                             families = list(gaussian, binomial))
+summary(multMixedFit)
+
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+
+# Fit a survival model
+CoxFit <- coxph(Surv(years, status2) ~ drug + sex, data = pbc2.id, model = TRUE)
+
+summary(CoxFit)
+
+# Fit a multivariate joint model
+multJMFit <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year")
+
+summary(multJMFit)
+
+
+```

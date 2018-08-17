@@ -1,0 +1,22 @@
+---
+title: "Different Parameterizationds in the Joint Model"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+## load packages
+library(JMbayes)
+    
+lmeFit <- lme(CD4 ~ obstime, random = ~ obstime | patient, data = aids)
+
+coxFit <- coxph(Surv(Time, death) ~ 1, data = aids.id, x = TRUE)
+
+dform = list(fixed = ~ 1, random = ~ 1,
+             indFixed = 2, indRandom = 2)
+
+jointFit2 <- jointModelBayes(lmeFit, coxFit, timeVar = "obstime",
+                             param = "td-both", extraForm = dform, baseHaz = "P-splines", verbose = FALSE)
+
+summary(jointFit2)
+```

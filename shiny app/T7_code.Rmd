@@ -1,0 +1,23 @@
+---
+title: "T1 + T2 + T3 + T4 + T5"
+output: html_document
+---
+
+
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library(JMbayes)
+
+# Include time varying-effects
+Ints_tveffect <- list("log(serBilir)_value" = ~ 0 + tve(years, df = 8), "log(serBilir)_slope" = ~ 0 + tve(years, df = 8), 
+                      "hepatomegaly_value" = ~ 0 + tve(years, df = 8), "hepatomegaly_slope" = ~ 0 + tve(years, df = 8))
+
+JMFit_tveffect <- mvJointModelBayes(multJMFit, CoxFit, timeVar = "year",
+                                    Interactions = Ints_tveffect, priors = list(shrink_alphas = TRUE))
+plot(JMFit_tveffect, which = "tv_effect")
+
+
+```

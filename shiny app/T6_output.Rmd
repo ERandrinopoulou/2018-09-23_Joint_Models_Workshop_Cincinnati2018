@@ -1,0 +1,36 @@
+---
+title: "T6"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+## load packages
+library(JMbayes)
+
+multMixedFit <- mvglmer(list(log(serBilir) ~ year * drug + (year | id),
+                             hepatomegaly ~ year * drug + (year | id)), data = pbc2,
+                             families = list(gaussian, binomial))
+
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+
+# Fit a survival model
+CoxFit <- coxph(Surv(years, status2) ~ drug + sex, data = pbc2.id, model = TRUE)
+
+
+
+# Fit a multivariate joint model
+multJMFit <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year")
+    
+# Include different association structures for the longitudinal outcomes
+Forms <- list("log(serBilir)" = "value",
+              "log(serBilir)" = list(fixed = ~ 1, random = ~ 1,
+                                     indFixed = 2, indRandom = 2, name = "slope"),
+              "hepatomegaly" = "value",
+              "hepatomegaly" = list(fixed = ~ 1, random = ~ 1,
+                                     indFixed = 2, indRandom = 2, name = "slope"))
+multJMFit2 <- update(multJMFit, Formulas = Forms, priors = list(shrink_alphas = TRUE))
+summary(multJMFit2)
+
+
+```

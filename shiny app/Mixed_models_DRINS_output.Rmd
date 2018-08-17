@@ -1,0 +1,23 @@
+---
+title: "Mixed-effects models"
+output: html_document
+---
+
+
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE}
+
+## load packages
+library(nlme)
+library(JMbayes)
+library(splines)
+    
+## linear mixed effects model
+lmeFit3 <- lme(CD4 ~ ns(obstime, 3) + ns(obstime, 3):drug, data = aids,
+    random = list(patient = pdDiag(form = ~ ns(obstime, 3))))
+summary(lmeFit3)
+
+
+
+```

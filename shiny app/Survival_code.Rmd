@@ -1,0 +1,19 @@
+---
+title: "Relative Risk Models"
+output: html_document
+---
+
+
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library(survival)
+library(JMbayes)
+    
+coxFit <- coxph(Surv(Time, death) ~ drug + gender,
+                data = aids.id)
+summary(coxFit)
+
+```

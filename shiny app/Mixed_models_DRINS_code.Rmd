@@ -1,0 +1,21 @@
+---
+title: "Introduction"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library(nlme)
+library(JMbayes)
+library(splines)
+    
+## linear mixed effects model
+lmeFit3 <- lme(CD4 ~ ns(obstime, 3) + ns(obstime, 3):drug, data = aids,
+    random = list(patient = pdDiag(form = ~ ns(obstime, 3))))
+summary(lmeFit3)
+
+
+
+```

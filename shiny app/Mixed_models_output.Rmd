@@ -1,0 +1,30 @@
+---
+title: "Mixed-effects models"
+output: html_document
+---
+
+
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE}
+
+## load packages
+library(lattice)
+library(survival)
+library(JMbayes)
+    
+## linear mixed effects model
+lmeFit <- lme(CD4 ~ obstime + obstime:drug, data = aids,
+              random = ~ obstime | patient)
+summary(lmeFit)
+
+lmeFit1 <- lme(CD4 ~ obstime + obstime:drug, data = aids,
+    random = ~ 1 | patient)
+summary(lmeFit1)
+
+lmeFit2 <- lme(CD4 ~ obstime + obstime:drug, data = aids,
+    random = list(patient = pdDiag(form = ~ obstime)))
+summary(lmeFit2)
+
+
+```

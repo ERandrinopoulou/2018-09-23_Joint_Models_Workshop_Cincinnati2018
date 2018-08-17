@@ -1,0 +1,23 @@
+---
+title: "Time-Varying Effects in Joint Model"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library("JMbayes")
+
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+ 
+MixedModelFit <- mvglmer(list(log(serBilir) ~ year + (year | id)), 
+      data = pbc2, families = list(gaussian))
+ 
+coxFit <- coxph(Surv(years, status2) ~ drug + age, data = pbc2.id, model = TRUE)
+ 
+JMFit_tv <- mvJointModelBayes(MixedModelFit, coxFit, timeVar = "year",
+                              Interactions = list("log(serBilir)_value" = ~ 0 + tve(Time, df = 8)))
+
+plot(JMFit_tv, "tv_effect")
+```

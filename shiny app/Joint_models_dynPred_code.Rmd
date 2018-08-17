@@ -1,0 +1,31 @@
+---
+title: "Time-Varying Effects in Joint Model"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library("JMbayes")
+
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+
+lmeFit <- lme(log(serBilir) ~ year*drug + I(year^2)*drug, 
+              random = ~ year + year^2 | id, data = pbc2)
+
+coxFit <- coxph(Surv(years, status2) ~ drug, data = pbc2.id, x = TRUE)
+
+jointFit <- jointModelBayes(lmeFit, coxFit, timeVar = "year",
+                            baseHaz = "P-splines")
+
+newPat <- pbc2[pbc2$id %in% c(8), ]
+
+for (i in 1:dim(newPat)[1]){
+  newPatPred <- newPat[1:i,]
+  sfit <- survfitJM(jointFit, newdata = newPatPred)
+  plot(sfit, split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16, 
+       col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+}
+
+```

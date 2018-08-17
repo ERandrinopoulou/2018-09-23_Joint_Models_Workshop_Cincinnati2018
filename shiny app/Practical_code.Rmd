@@ -1,0 +1,83 @@
+---
+title: "T1 + T2 + T3 + T4 + T5"
+output: html_document
+---
+
+
+
+
+```{r introduction, echo=FALSE, results='hide', include=FALSE}
+
+## load packages
+library(JMbayes)
+
+###############
+# Practical 2 #
+###############
+
+# T1
+# Multivariate mixed model
+multMixedFit <- mvglmer(list(log(serBilir) ~ year * drug + (year | id),
+                             hepatomegaly ~ year * drug + (year | id)), data = pbc2,
+                        families = list(gaussian, binomial))
+
+# T2
+# create the indicator for the composite event
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+
+# T3
+# Survival model
+CoxFit <- coxph(Surv(years, status2) ~ drug + sex, data = pbc2.id,
+                model = TRUE)
+
+# T4
+# Joint model
+multJMFit <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year")
+
+# T5
+summary(multJMFit)
+
+# T6
+# Investigate different association parameters
+Forms <- list("log(serBilir)" = "value",
+              "log(serBilir)" = list(fixed = ~ 1, random = ~ 1,
+                                     indFixed = 2, indRandom = 2, name = "slope"),
+              "hepatomegaly" = "value",
+              "hepatomegaly" = list(fixed = ~ 1, random = ~ 1,
+                                     indFixed = 2, indRandom = 2, name = "slope"))
+multJMFit2 <- update(multJMFit, Formulas = Forms, priors = list(shrink_alphas = TRUE))
+summary(multJMFit2)
+
+# T7
+# Include time-varying effects
+Ints_tveffect <- list("log(serBilir)_value" = ~ 0 + tve(years, df = 8), "log(serBilir)_slope" = ~ 0 + tve(years, df = 8), 
+                      "hepatomegaly_value" = ~ 0 + tve(years, df = 8), "hepatomegaly_slope" = ~ 0 + tve(years, df = 8))
+
+JMFit_tveffect <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year",
+                                    Interactions = Ints_tveffect)
+plot(JMFit_tveffect, which = "tv_effect")
+
+
+# T8
+# Obtain data for Patient 81
+ND <- pbc2[pbc2$id == 81, ]
+
+# T9
+# Obtain survival probabilities
+sprobs <- survfitJM(multJMFit, ND[1, ])
+
+# T10
+# We use a for-loop to update predictions as more measurements are available
+N <- nrow(ND)
+dyn_sprobs <- vector("list", N)
+
+
+for (i in seq_len(N)) {
+  dyn_sprobs[[i]] <- survfitJM(multJMFit, ND[1:i, ], 
+                               survTimes = seq(0, 14, length.out = 85))
+  plot(dyn_sprobs[[i]], split = c(2, 1), surv_in_all = TRUE)
+}
+
+
+
+```
