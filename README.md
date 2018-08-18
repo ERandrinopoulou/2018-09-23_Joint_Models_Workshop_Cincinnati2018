@@ -12,11 +12,12 @@ The packages that are needed are: \
 - shiny\
 These packages can be installed using the following function call:
 
-> install.packages(c("survival", "nlme", "JMbayes", "lattice", "shiny"), dependencies = TRUE)
-\
+```r
+install.packages(c("survival", "nlme", "JMbayes", "lattice", "shiny"), dependencies = TRUE)
+```
+
 To run the app you will need to run the following:
-\
-> library("shiny")
-\
-> runGitHub("2018-09-23_Joint_Models_Workshop_Cincinnati2018", "ERandrinopoulou", subdir = "shiny app/")
- 
+
+```r
+runGitHub("2018-09-23_Joint_Models_Workshop_Cincinnati2018", "ERandrinopoulou", subdir = "shiny app/")
+ ```
