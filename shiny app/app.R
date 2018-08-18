@@ -1,7 +1,7 @@
 myDF <- list("Introduction" = c("aids data set", "pbc2 data set"), "Linear Mixed-Effects Models" = "", "Relative Risk Models" = "",
              "The Basic Joint Model" = "", "Extensions of Joint Models" = c("Parameterizations", "Multivariate Joint Models", 
                                                                             "Time-Varying Effects"), "Dynamic Predictions" = "",
-             "Practical 2 - extra" = c("Task 1-5", "Task 6", "Task 7"))
+             "Practical 2 - extra" = c("Task 1-5", "Task 6", "Task 7", "Task 8-9"))
 
 library(shiny)
 library(shinyWidgets)
@@ -39,7 +39,7 @@ ui <-  fluidPage(
       tabsetPanel(
         tabPanel("R code", uiOutput("codeIntr"), uiOutput("codeMM"), uiOutput("codeRR"), uiOutput("codeJM"), 
                  uiOutput("codeJMparam"), uiOutput("codeJMshrink"), uiOutput("codeJM_TVeffect"), uiOutput("codePred"),
-                 uiOutput("codeT12345"), uiOutput("codeT6"), uiOutput("codeT7")), 
+                 uiOutput("codeT12345"), uiOutput("codeT6"), uiOutput("codeT7"), uiOutput("codeT89")), 
         tabPanel("Output", uiOutput("outputIntr"), uiOutput("outputMM"), uiOutput("outputRR"), uiOutput("outputJM"), 
                  uiOutput("outputJMparam"), uiOutput("outputJMshrink"), uiOutput("outputJM_TVeffect"), 
                  uiOutput("outputT12345"), uiOutput("outputT6"), uiOutput("outputT7"),
@@ -214,19 +214,21 @@ server <- function(input, output, session) {
       includeMarkdown("T12345_code.Rmd")
     }
   })
-  
   output$codeT6 <- reactive({ 
     if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 6"){
       includeMarkdown("T6_code.Rmd")
     }
   })
-  
   output$codeT7 <- reactive({ 
     if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 7"){
       includeMarkdown("T7_code.Rmd")
     }
   })
-  
+  output$codeT89 <- reactive({ 
+    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 8-9"){
+      includeMarkdown("T89_code.Rmd")
+    }
+  })
     
   ###########################################################################################  
   output$outputIntr <- reactive({
