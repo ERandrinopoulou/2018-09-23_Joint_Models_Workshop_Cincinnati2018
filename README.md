@@ -11,8 +11,8 @@ The packages that are needed are: \
 - [lattice](http://cran.r-project.org/package=lattice)
 - [splines](http://cran.r-project.org/) 
 - [shiny](http://cran.r-project.org/package=shiny)
-\
-\
+
+
 These packages can be installed using the following function call:
 
 ```r
