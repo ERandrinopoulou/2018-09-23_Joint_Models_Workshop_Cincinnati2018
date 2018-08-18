@@ -1,10 +1,10 @@
 # 2018-09-23_Joint_Models_Workshop_Cincinnati2018
 
 
-This repository consist of all the material (slides, practicals and app) for the workshop on *"Joint Modelling of Longitudinal 
-and Survival Data: Tools to Evaluate Exposures and Predict Outcome Across the Lifespan"*.
+This repository consist of all the material (slides, practicals and app) for the workshop on **"Joint Modelling of Longitudinal 
+and Survival Data: Tools to Evaluate Exposures and Predict Outcome Across the Lifespan"**.
 \
-The packages that are needed are: \
+The packages that are needed are: 
 - [survival](http://cran.r-project.org/package=survival)
 - [nlme](http://cran.r-project.org/package=nlme)
 - [JMbayes](http://cran.r-project.org/package=JMbayes)
