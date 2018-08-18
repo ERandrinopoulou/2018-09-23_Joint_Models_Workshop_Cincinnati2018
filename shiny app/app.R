@@ -1,7 +1,7 @@
 myDF <- list("Introduction" = c("aids data set", "pbc2 data set"), "Linear Mixed-Effects Models" = "", "Relative Risk Models" = "",
              "The Basic Joint Model" = "", "Extensions of Joint Models" = c("Parameterizations", "Multivariate Joint Models", 
                                                                             "Time-Varying Effects"), "Dynamic Predictions" = "",
-             "Practical 2 - extra" = c("Task 1, Task 2, Task 3, Task 4 and Task 5", "Task 6", "Task 7"))
+             "Practical 2 - extra" = c("Task 1-5", "Task 6", "Task 7"))
 
 library(shiny)
 library(shinyWidgets)
@@ -39,9 +39,10 @@ ui <-  fluidPage(
       tabsetPanel(
         tabPanel("R code", uiOutput("codeIntr"), uiOutput("codeMM"), uiOutput("codeRR"), uiOutput("codeJM"), 
                  uiOutput("codeJMparam"), uiOutput("codeJMshrink"), uiOutput("codeJM_TVeffect"), uiOutput("codePred"),
-                 uiOutput("codeT12345"), uiOutput("codeT6")), 
+                 uiOutput("codeT12345"), uiOutput("codeT6"), uiOutput("codeT7")), 
         tabPanel("Output", uiOutput("outputIntr"), uiOutput("outputMM"), uiOutput("outputRR"), uiOutput("outputJM"), 
-                 uiOutput("outputJMparam"), uiOutput("outputJMshrink"), uiOutput("outputJM_TVeffect"), uiOutput("outputT12345"), uiOutput("outputT6"),
+                 uiOutput("outputJMparam"), uiOutput("outputJMshrink"), uiOutput("outputJM_TVeffect"), 
+                 uiOutput("outputT12345"), uiOutput("outputT6"), uiOutput("outputT7"),
                  conditionalPanel(condition = 'input.dynPred == "univariate"', plotOutput("DynPred")),
                  conditionalPanel(condition = 'input.dynPred == "multivariate"', plotOutput("MvDynPred"))
                  )
@@ -209,7 +210,7 @@ server <- function(input, output, session) {
   })
   
   output$codeT12345 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 1, Task 2, Task 3, Task 4 and Task 5"){
+    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 1-5"){
       includeMarkdown("T12345_code.Rmd")
     }
   })
@@ -217,6 +218,12 @@ server <- function(input, output, session) {
   output$codeT6 <- reactive({ 
     if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 6"){
       includeMarkdown("T6_code.Rmd")
+    }
+  })
+  
+  output$codeT7 <- reactive({ 
+    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 7"){
+      includeMarkdown("T7_code.Rmd")
     }
   })
   
@@ -334,7 +341,7 @@ server <- function(input, output, session) {
   #############################################
   
   output$outputT12345 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 1, Task 2, Task 3, Task 4 and Task 5"){
+    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 1-5"){
       includeHTML("T12345_output.html")
     }
   })
@@ -342,6 +349,12 @@ server <- function(input, output, session) {
   output$outputT6 <- reactive({ 
     if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 6"){
       includeHTML("T6_output.html")
+    }
+  })
+  
+  output$outputT7 <- reactive({ 
+    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 7"){
+      includeHTML("T7_output.html")
     }
   })
   
