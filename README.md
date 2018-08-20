@@ -22,5 +22,5 @@ install.packages(c("survival", "nlme", "JMbayes", "lattice", "splines", "shiny")
 To run the app you will need to run the following:
 
 ```r
-runGitHub("2018-09-23_Joint_Models_Workshop_Cincinnati2018", "ERandrinopoulou", subdir = "shiny app/")
+runGitHub("Joint_Models_Workshop_Cincinnati2018", "ERandrinopoulou", subdir = "shiny app/")
  ```
