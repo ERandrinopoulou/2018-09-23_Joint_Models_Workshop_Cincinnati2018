@@ -32,8 +32,8 @@ ui <-  fluidPage(
         uiOutput("ShrinkSelection"),
         uiOutput("TimeVarSelection"),
         uiOutput("dynPredSelection"),
-        uiOutput("obsChoose"),
-        uiOutput("obsChoosePractical")
+        conditionalPanel(condition = 'input.Chapter == "Dynamic Predictions"', uiOutput("obsChoose")),
+        conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("obsChoosePractical"))
       )
     ),
     
@@ -41,14 +41,18 @@ ui <-  fluidPage(
     mainPanel(    
       tabsetPanel(
         tabPanel("R code", uiOutput("codeIntr"), uiOutput("codeMM"), uiOutput("codeRR"), uiOutput("codeJM"), 
-                 uiOutput("codeJMparam"), uiOutput("codeJMshrink"), uiOutput("codeJM_TVeffect"), uiOutput("codePred"),
+                 uiOutput("codeJMparam"), uiOutput("codeJMshrink"), uiOutput("codeJM_TVeffect"), 
+                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("codePred")),
+                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("codePredMV")),
+                 #uiOutput("codePred"),
                  uiOutput("codeT12345"), uiOutput("codeT6"), uiOutput("codeT7"), uiOutput("codeT89"),
-                 uiOutput("codeT10")), 
+                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("codeT10"))
+                 ), 
         tabPanel("Output", uiOutput("outputIntr"), uiOutput("outputMM"), uiOutput("outputRR"), uiOutput("outputJM"), 
                  uiOutput("outputJMparam"), uiOutput("outputJMshrink"), uiOutput("outputJM_TVeffect"), 
                  uiOutput("outputT12345"), uiOutput("outputT6"), uiOutput("outputT7"), uiOutput("outputT89"), 
                  #plotOutput("MvDynPredPract"),
-                 conditionalPanel(condition = 'input.Chapter == "Practical 2 - extra" && input.Subselection == "Task 10"', plotOutput("MvDynPredPract")),
+                 conditionalPanel(condition = 'input.Chapter == "Practical 2 - extra"', plotOutput("MvDynPredPract")),
                  conditionalPanel(condition = 'input.dynPred == "univariate"', plotOutput("DynPred")),
                  conditionalPanel(condition = 'input.dynPred == "multivariate"', plotOutput("MvDynPred"))
                  )
@@ -101,37 +105,41 @@ server <- function(input, output, session) {
     }
   })
   
-  output$obsChoose <- renderUI({
-    if (input$Chapter == "Dynamic Predictions") {
-      sliderInput("obs", "Number of observations to use in prediction:", min = 2, max = 7, value = 2, step = 1, animate = T)
-    }
-  })
-  
   
   output$dynPredSelection <- renderUI({
     if (input$Chapter == "Dynamic Predictions") {
-      radioButtons("dynPred", "Biomarkers", choices = c("univariate", "multivariate"), selected = "univariate")
+      radioButtons("dynPred", "Biomarkers", choices = c("univariate", "multivariate"))
     }
   })
   
-  ## Observations to be used for predictions
-  # output$obsChoose <- renderUI({
-  #   if (input$Chapter == "Dynamic Predictions") {
-  #     load("newPat.RData")
-  #     
-  #     nr <- nrow(newPat)
-  #     #if (!is.null(nr) && nr > 1) {
-  #       sliderInput("obs", "Number of observations to use in prediction:",
-  #                   min = 2, max = nr - 1, value = 2, step = 1, animate = TRUE)
-  #     #}
-  #   }
-  # })
+  # Newdata patient for predictions
+  ND <- reactive({
+    newPat <- pbc2[pbc2$id %in% c(8), ]
+    newPat
+  })
+  NDpract <- reactive({
+    newPat <- pbc2[pbc2$id %in% c(81), ]
+    newPat
+  })
   
-
+  
+  # Observations to be used for predictions
+  output$obsChoose <- renderUI({
+      nd <- ND()
+      nr <- nrow(nd)
+      if (!is.null(nr) && nr > 1) {
+        sliderInput("obs", "Number of observations to use in prediction:",
+                    min = 2, max = nr - 1, value = 2, step = 1, animate = TRUE)
+    }
+  })
   
   output$obsChoosePractical <- renderUI({
-    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 10") {
-      sliderInput("obsPractical", "Number of observations to use in prediction:", min = 2, max = 10, value = 2, step = 1, animate = T)
+    if (input$Chapter == "Practical 2 - extra") {
+      ndPract <- NDpract()
+      nr <- nrow(ndPract)
+      if (!is.null(nr) && nr > 1) {
+        sliderInput("obsPractical", "Number of observations to use in prediction:", min = 2, max = nr - 1, value = 2, step = 1, animate = TRUE)
+      }
     }
   })
   
@@ -212,12 +220,18 @@ server <- function(input, output, session) {
     }
   })
   
+  
   output$codePred <- reactive({
-      if (input$Chapter == "Dynamic Predictions" && input$dynPred == "univariate") {
-        includeMarkdown("Joint_models_dynPred_code.Rmd")
-      } else if (input$Chapter == "Dynamic Predictions" && input$dynPred == "multivariate"){
-        includeMarkdown("Joint_models_MVdynPred_code.Rmd")
-      }
+    if (input$Chapter == "Dynamic Predictions"){
+      includeMarkdown("Joint_models_dynPred_code.Rmd")
+    }
+    
+  })
+  
+  output$codePredMV <- reactive({
+    if (input$Chapter == "Dynamic Predictions"){
+      includeMarkdown("Joint_models_MVdynPred_code.Rmd")
+    }
     
   })
   
@@ -242,7 +256,7 @@ server <- function(input, output, session) {
     }
   })
   output$codeT10 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 10"){
+    if (input$Chapter == "Practical 2 - extra"){
       includeMarkdown("T10_code.Rmd")
     }
   })
@@ -326,38 +340,48 @@ server <- function(input, output, session) {
   
   
   ##################################################################  
-  ### Dynamic prediction plots
- 
+  ### Univariate dynamic prediction plots
+  sfit1 <- reactive({
+    nd <- ND()
+    sfit1t <- vector("list", nrow(nd))
+    for (i in 1:nrow(nd)){
+      ndNEW <- nd[1:i, ]
+      sfit1t[[i]] <- survfitJM(jointFit, newdata = ndNEW)
+    }
+    sfit1t
+  })
+  
   output$DynPred <- renderPlot({
-    if (length(input$dynPred) > 0){
-      #if (length(input$Chapter) > 0 && length(input$obs) > 0){
-        if (input$Chapter == "Dynamic Predictions"){
-         newPat <- pbc2[pbc2$id %in% c(8), ]
-         newPatPred <- newPat[1:input$obs,]
-         sfit <- survfitJM(jointFit, newdata = newPatPred)
-         dynPred <- plot(sfit, include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+     if (input$Chapter == "Dynamic Predictions"){
+         sfit1. <- sfit1()
+         nn <- if(is.na(input$obs)) length(sfit1.) else input$obs
+         dynPred <- plot(sfit1.[[nn]], include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
               col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
          dynPred
-        }
-     # }
-    }
+      }
+
   })
   
   
   ### Multivariate dynamic prediction plots
+  sfit2 <- reactive({
+    nd <- ND()
+    sfit2t <- vector("list", nrow(nd))
+    for (i in 1:nrow(nd)){
+      ndNEW <- nd[1:i, ]
+      sfit2t[[i]] <- survfitJM(multJMFit, newdata = ndNEW)
+    }
+    sfit2t
+  })
   
   output$MvDynPred <- renderPlot({
-    if (length(input$dynPred) > 0){
-    #if (length(input$Chapter) > 0 && length(input$obs) > 0){
       if (input$Chapter == "Dynamic Predictions"){
-        newPat <- pbc2[pbc2$id %in% c(8), ]
-          newPatPred <- newPat[1:input$obs,]
-          sfit <- survfitJM(multJMFit, newdata = newPatPred)
-          MVdynPred <- plot(sfit, split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16, 
-               col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+        sfits2. <- sfit2()
+        nn <- if(is.na(input$obs)) length(sfits2.) else input$obs
+        MVdynPred <- plot(sfits2.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+              col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
         MVdynPred
       }
-    }
   })
   
   #############################################
@@ -383,20 +407,28 @@ server <- function(input, output, session) {
     }
   })
   
-  ### Dynamic prediction plots Practical
+  ### Multivariate dynamic prediction plots Practical
+  sfitPract <- reactive({
+    ndPract <- NDpract()
+    sfitt <- vector("list", nrow(ndPract))
+    for (i in 1:nrow(ndPract)){
+      ndNEWPract <- ndPract[1:i, ]
+      sfitt[[i]] <- survfitJM(multJMFitPractical, newdata = ndNEWPract)
+    }
+    sfitt
+  })
   
   output$MvDynPredPract <- renderPlot({
-    if (length(input$Chapter) > 0 & length(input$obsPractical) > 0){
-      if (input$Chapter == "Practical 2 - extra" && input$Subselection == "Task 10"){
-        newPat <- pbc2[pbc2$id %in% c(81), ]
-        newPatPred <- newPat[1:input$obsPractical,]
-        sfit <- survfitJM(multJMFit, newdata = newPatPred)
-        dynPred <- plot(sfit, include.y = TRUE, split = c(2, 1), estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16, 
-                        col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
-        dynPred
-      }
+    if (input$Subselection == "Task 10"){
+       sfitPract. <- sfitPract()
+       nn <- if(is.na(input$obsPractical)) length(sfitPract.) else input$obsPractical
+       dynPred <- plot(sfitPract.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+                       col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+       dynPred
     }
   })
+  
+  
   
 }
 
