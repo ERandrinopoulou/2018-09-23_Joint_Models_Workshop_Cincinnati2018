@@ -1,4 +1,4 @@
-# Joint Models Workshop Cincinnati2018
+# Joint Models Workshop Cincinnati 2018
 
 
 This repository consist of all the material (slides, practicals and app) for the workshop on **"Joint Modelling of Longitudinal 
