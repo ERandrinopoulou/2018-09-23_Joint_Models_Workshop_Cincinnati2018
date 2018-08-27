@@ -10,10 +10,13 @@ output: html_document
 
 ## load packages
 library(survival)
-library(JMbayes)
-    
+library(JMbayes) 
+
+## fit a survival model
 coxFit <- coxph(Surv(Time, death) ~ drug + gender,
                 data = aids.id)
+
+## summarize the results of the model
 summary(coxFit)
 
 ```

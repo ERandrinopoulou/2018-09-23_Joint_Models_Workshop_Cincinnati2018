@@ -11,14 +11,18 @@ output: html_document
 ## load packages
 library(JMbayes)
 
-# Include different association structures for the longitudinal outcomes
+## different association structures for the longitudinal outcomes
 Forms <- list("log(serBilir)" = "value",
               "log(serBilir)" = list(fixed = ~ 1, random = ~ 1,
                                      indFixed = 2, indRandom = 2, name = "slope"),
               "hepatomegaly" = "value",
               "hepatomegaly" = list(fixed = ~ 1, random = ~ 1,
                                      indFixed = 2, indRandom = 2, name = "slope"))
+
+## update the multivariate joint model
 multJMFit2 <- update(multJMFit, Formulas = Forms, priors = list(shrink_alphas = TRUE))
+
+## simmarize the results of the multivariate joint model
 summary(multJMFit2)
 
 ```

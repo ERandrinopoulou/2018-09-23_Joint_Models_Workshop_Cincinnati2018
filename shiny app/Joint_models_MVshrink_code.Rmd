@@ -9,26 +9,33 @@ output: html_document
 
 ## load packages
 library(JMbayes)
-pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive") # create composite event
 
+## fit a linear mixed effects model
 multMixedFit <- mvglmer(list(log(serBilir) ~ year + (year | id),
                              spiders ~ year + (1 | id)), data = pbc2,
                         families = list(gaussian, binomial))
 
+## fit a survival model
 coxFit <- coxph(Surv(years, status2) ~ drug + age, data = pbc2.id,
                 model = TRUE)
 
+## association structure argument
 Forms <- list("log(serBilir)" = "value",
               "log(serBilir)" = list(fixed = ~ 1, random = ~ 1,
                                      indFixed = 2, indRandom = 2, name = "slope"),
               "spiders" = list(fixed = ~ 0 + year + I(year^2/2), random = ~ 0 + year,
                                indFixed = 1:2, indRandom = 1, name = "area"))
 
+## interaction argument
 Ints <- list("log(serBilir)" = ~ drug, "log(serBilir)_slope" = ~ drug,
              "spiders_area" = ~ drug)
 
+## fit a multivariate joint model
 multJMFit3 <- mvJointModelBayes(multMixedFit, coxFit, timeVar = "year", Formulas = Forms, Interactions = Ints,
                      priors = list(shrink_alphas = TRUE))
+
+## summarize the results of the model
 summary(multJMFit3)
 
 ```

@@ -10,9 +10,11 @@ output: html_document
 library(nlme)
 library(JMbayes)
     
-## linear mixed effects model
+## fit a linear mixed effects model
 lmeFit2 <- lme(CD4 ~ obstime + obstime:drug, data = aids,
     random = list(patient = pdDiag(form = ~ obstime)))
+
+## summarize the results of the model
 summary(lmeFit2)
 
 

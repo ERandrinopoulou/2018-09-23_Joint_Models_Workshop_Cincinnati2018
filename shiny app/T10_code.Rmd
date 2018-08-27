@@ -11,7 +11,7 @@ library(JMbayes)
 N <- nrow(ND)
 dyn_sprobs <- vector("list", N)
 
-# We will use a for-loop to update predictions of patient 81
+## use a for-loop to update predictions of patient 81 when an extra visit is available
 for (i in seq_len(N)) {
   dyn_sprobs[[i]] <- survfitJM(multJMFit, ND[1:i, ], 
                                survTimes = seq(0, 14, length.out = 85))

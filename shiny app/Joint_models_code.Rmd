@@ -12,13 +12,18 @@ output: html_document
 library(survival)
 library(JMbayes)
     
+## fit a linear mixed effects model
 lmeFit <- lme(CD4 ~ obstime + obstime:drug,
               random = ~ obstime | patient, data = aids)
 
+## fit a survival model
 coxFit <- coxph(Surv(Time, death) ~ drug + gender, data = aids.id, x = TRUE)
 
+## fit a joint model
 jointFit <- jointModelBayes(lmeFit, coxFit, timeVar = "obstime",
                             baseHaz = c("P-splines"))
+
+## summarize the results of the model
 summary(jointFit)
 
 ```

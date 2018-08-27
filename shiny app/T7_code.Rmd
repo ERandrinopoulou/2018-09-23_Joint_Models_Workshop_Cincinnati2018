@@ -11,12 +11,14 @@ output: html_document
 ## load packages
 library(JMbayes)
 
-# Include time varying-effects
+## time varying-effects
 Ints_tveffect <- list("log(serBilir)_value" = ~ 0 + tve(years, df = 8), "log(serBilir)_slope" = ~ 0 + tve(years, df = 8), 
                       "hepatomegaly_value" = ~ 0 + tve(years, df = 8), "hepatomegaly_slope" = ~ 0 + tve(years, df = 8))
 
+## update the multivariate joint model
 JMFit_tveffect <- update(multJMFit2, Interactions = Ints_tveffect, priors = list(shrink_alphas = TRUE))
 
+## plot the effect
 plot(JMFit_tveffect, which = "tv_effect")
 
 

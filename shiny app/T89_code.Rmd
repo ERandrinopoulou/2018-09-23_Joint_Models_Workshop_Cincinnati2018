@@ -11,10 +11,10 @@ output: html_document
 ## load packages
 library(JMbayes)
 
-# Obtain the data of Patient 81
+## obtain the data of patient 81
 ND <- pbc2[pbc2$id == 81, ]
 
-# Calculate the survival predictions using the model from T4
+## calculate the survival predictions using the model from T4
 sprobs <- survfitJM(multJMFit, ND[1, ])
 sprobs
 

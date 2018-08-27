@@ -11,22 +11,27 @@ output: html_document
 ## load packages
 library(JMbayes)
     
-# Fit a multivariate mixed effects model
+## fit a multivariate mixed effects model
 multMixedFit <- mvglmer(list(log(serBilir) ~ year * drug + (year | id),
                              hepatomegaly ~ year * drug + (year | id)), data = pbc2,
                              families = list(gaussian, binomial))
+
+## summarize the results of the linear mixed effects model
 summary(multMixedFit)
 
-pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+## create the composite event
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive") 
 
-# Fit a survival model
+## fit a survival model
 CoxFit <- coxph(Surv(years, status2) ~ drug + sex, data = pbc2.id, model = TRUE)
 
+## summarize the results of the survival model
 summary(CoxFit)
 
-# Fit a multivariate joint model
+## fit a multivariate joint model
 multJMFit <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year")
 
+## summarize the results of the joint model
 summary(multJMFit)
 
 ```

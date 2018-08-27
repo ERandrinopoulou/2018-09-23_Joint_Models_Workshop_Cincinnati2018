@@ -18,8 +18,8 @@ data(pbc2, package = "JM")
 data(pbc2.id, package = "JM")
 
 ## create event variable
-pbc2$status2 <- as.numeric(pbc2$status != "alive")
-pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive")
+pbc2$status2 <- as.numeric(pbc2$status != "alive") # create composite event
+pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive") # create composite event
     
 ## plot log(serBilir) outcome per patient and per group treatment
 print(xyplot(log(serBilir) ~ year | drug, group = id, data = pbc2, col = "dark grey",
