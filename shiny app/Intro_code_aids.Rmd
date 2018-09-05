@@ -14,8 +14,8 @@ library(survival)
 library(JMbayes)
     
 ## obtain data
-data(aids, package = "JM")
-data(aids.id, package = "JM")
+data(aids, package = "JMbayes")
+data(aids.id, package = "JMbayes")
 
 ## plot CD4 outcome per patient and per group treatment
 xyplot(CD4 ~ obstime | drug, group = patient, data = aids, col = "dark grey",

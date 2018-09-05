@@ -14,8 +14,8 @@ library(survival)
 library(JMbayes)
     
 ## obtain data
-data(pbc2, package = "JM")
-data(pbc2.id, package = "JM")
+data(pbc2, package = "JMbayes")
+data(pbc2.id, package = "JMbayes")
 
 ## create event variable
 pbc2$status2 <- as.numeric(pbc2$status != "alive") # create composite event
