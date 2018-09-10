@@ -27,7 +27,7 @@ jointFit.p1 <- jointModelBayes(lmeFit.p1, survFit.p1, timeVar = "year", baseHaz 
 summary(jointFit.p1)
 
 # T6
-## obtain the estimate and confidence interval of the OR from the joint model
+## obtain the estimate and credible interval of the OR from the joint model
 confint(jointFit.p1, parm = "Longitudinal")
 exp(confint(jointFit.p1, parm = "Event"))
 
