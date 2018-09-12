@@ -35,8 +35,9 @@ exp(confint(jointFit.p1, parm = "Event"))
 ## inlude interaction term between serBilir and drug and update the joint model
 intFact <- function(x, data) {
    cbind(x, "D-penicil" = x * (data$drug == "D-penicil"))
-   }
-jointFit2.p1 <- update(jointFit.p1, transFun = intFact)
+}
+
+jointFit2.p1 <- update(jointFit.p1, transFun = intFact2)
 
 ## summarize the results of the joint model
 summary(jointFit2.p1)
