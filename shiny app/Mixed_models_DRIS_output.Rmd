@@ -12,11 +12,36 @@ output: html_document
 library(lattice)
 library(survival)
 library(JMbayes)
+library(lattice)
     
 ## linear mixed effects model
 lmeFit2 <- lme(CD4 ~ obstime + obstime:drug, data = aids,
     random = list(patient = pdDiag(form = ~ obstime)))
 summary(lmeFit2)
 
+## effect plot
+# in cases were we consider statistical models with complex terms (interactions and nonlinear terms), the regression coefficients we obtain in the output do not have a straightforward interpretation. In these settings, we can use effect plots to communicate the results of the model. The first step is to specify a dataset that contains combinations of values for the covariates of the model based on which we will create the plot. In our example, we can create a single figure for each drug group and increasing time
+newdata <- with(aids, data.frame(
+  obstime = seq(min(aids$obstime, na.rm = T), max(aids$obstime, na.rm = T), length.out = 80),
+  drug = gl(2, 80)
+))
+
+# with the previous code, we will create the plot for increasing time from min time to max time and both drug and placebo. Next, we obtain the predictions from the model (these are in the log-hazard scale), and we calculate the 95% confidence interval
+X <- model.matrix(~ obstime + obstime:drug, data = newdata)
+
+betas <- fixef(lmeFit2)
+Vbetas <- vcov(lmeFit2)
+newdata$pred <- c(X %*% betas)
+se.pred <- sqrt(diag(X %*% Vbetas %*% t(X)))
+newdata$lo <- newdata$pred - 1.96 * se.pred
+newdata$up <- newdata$pred + 1.96 * se.pred
+newdata$drug <- factor(newdata$drug, levels = c(1,2), labels = c("ddC", "ddI"))
+
+# the last line of the code transforms the drug variable to a factor in order to have a more visible label in the plot that is produced with the following code
+xyplot(pred + lo + up ~ obstime | drug, type = "l", lty = c(1, 2, 2), 
+       par.settings = list(fontsize = list(text = 15, points = 20)),
+       data = newdata, col = 1, lwd = 2, ylab = "CD4", xlab = "Time (months)",
+       main = "", as.table = TRUE
+)
 
 ```
