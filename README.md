@@ -13,7 +13,7 @@ The packages that are needed for this workshop are:
 - [shiny](http://cran.r-project.org/package=shiny)
 
 
-These packages can be installed using the following function call:
+These packages can be installed using the following function call (this needs to be done only once):
 
 ```r
 install.packages(c("survival", "nlme", "JMbayes", "lattice", "splines", "shiny", "shinyWidgets"), 
