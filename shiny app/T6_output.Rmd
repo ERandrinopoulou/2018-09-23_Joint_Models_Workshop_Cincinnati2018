@@ -24,11 +24,12 @@ multJMFit <- mvJointModelBayes(multMixedFit, CoxFit, timeVar = "year")
     
 # Include different association structures for the longitudinal outcomes
 Forms <- list("log(serBilir)" = "value",
-              "log(serBilir)" = list(fixed = ~ 1, random = ~ 1,
-                                     indFixed = 2, indRandom = 2, name = "slope"),
+              "log(serBilir)" = list(fixed = ~ 1 + drug, random = ~ 1,
+                                     indFixed = 2:3, indRandom = 2, name = "slope"),
               "hepatomegaly" = "value",
-              "hepatomegaly" = list(fixed = ~ 1, random = ~ 1,
-                                     indFixed = 2, indRandom = 2, name = "slope"))
+              "hepatomegaly" = list(fixed = ~ 1 + drug, random = ~ 1,
+                                     indFixed = 2:3, indRandom = 2, name = "slope"))
+
 multJMFit2 <- update(multJMFit, Formulas = Forms, priors = list(shrink_alphas = TRUE))
 summary(multJMFit2)
 
