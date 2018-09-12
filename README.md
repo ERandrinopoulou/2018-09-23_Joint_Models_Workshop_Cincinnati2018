@@ -16,7 +16,13 @@ The packages that are needed for this workshop are:
 These packages can be installed using the following function call:
 
 ```r
-install.packages(c("survival", "nlme", "JMbayes", "lattice", "splines", "shiny"), dependencies = TRUE)
+install.packages(c("survival", "nlme", "JMbayes", "lattice", "splines", "shiny", "shinyWidgets"), dependencies = TRUE)
+```
+
+Then they can be loaded with:
+```r
+lapply(c("survival", "nlme", "JMbayes", "lattice", "splines", "shiny", "shinyWidgets"), library, character.only = TRUE)
+
 ```
 
 To run the app you will need to run the following:
