@@ -47,7 +47,7 @@ print(p2, split = c(2,1,2,1))
 
 ## plot the Kaplan-Meier curve
 sfit.pbc <- survfit(Surv(years, status2) ~ drug, data = pbc2.id)
-par(oma = c(0,0,0,3))
+
 plot(sfit.pbc, mark.time = FALSE, lwd = 1.5, xlab = "Time (years)",
      ylab = "Survival Probability", main = "Kaplan-Meier Estimate", mgp = c(2.4, 0.4, 0),
      tcl = -0.4, cex.lab = 1.2, cex.axis = 1.1, col = 1:2)

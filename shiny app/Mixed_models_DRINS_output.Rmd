@@ -30,7 +30,7 @@ newdata <- with(aids, data.frame(
 ))
 
 # with the previous code, we will create the plot for increasing time from min time to max time and both drug and placebo. 
-# Next, we obtain the predictions from the model (these are in the log-hazard scale), and we calculate the 95% confidence interval
+# Next, we obtain the predictions from the model, and we calculate the 95% confidence interval
 X <- model.matrix(~ ns(obstime, 3) + ns(obstime, 3):drug, data = newdata)
 
 betas <- fixef(lmeFit3)

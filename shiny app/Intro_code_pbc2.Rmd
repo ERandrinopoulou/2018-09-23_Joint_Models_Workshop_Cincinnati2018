@@ -22,9 +22,9 @@ pbc2$status2 <- as.numeric(pbc2$status != "alive") # create composite event
 pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive") # create composite event
     
 ## plot log(serBilir) outcome per patient and per group treatment
-print(xyplot(log(serBilir) ~ year | drug, group = id, data = pbc2, col = "dark grey",
+xyplot(log(serBilir) ~ year | drug, group = id, data = pbc2, col = "dark grey",
              type = "l", ylab = "log serum Bilirubin",
-             xlab = "Time (years)", par.settings = list(fontsize = list(text = 15, points = 10), layout.widths = list(right.padding = 6))))
+             xlab = "Time (years)", par.settings = list(fontsize = list(text = 15, points = 10), layout.widths = list(right.padding = 6)))
 
 ## plot log(serBilir) outcome per patient (for a randomly selected set of patients) and per group treatment
 set.seed(12345)
@@ -47,7 +47,7 @@ print(p2, split = c(2,1,2,1))
 
 ## plot the Kaplan-Meier curve
 sfit.pbc <- survfit(Surv(years, status2) ~ drug, data = pbc2.id)
-par(oma = c(0,0,0,3))
+
 plot(sfit.pbc, mark.time = FALSE, lwd = 1.5, xlab = "Time (years)",
      ylab = "Survival Probability", main = "Kaplan-Meier Estimate", mgp = c(2.4, 0.4, 0),
      tcl = -0.4, cex.lab = 1.2, cex.axis = 1.1, col = 1:2)

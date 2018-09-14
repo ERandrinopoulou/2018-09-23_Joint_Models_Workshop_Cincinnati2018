@@ -11,7 +11,7 @@ output: html_document
 library(JMbayes)
 pbc2.id$status2 <- as.numeric(pbc2.id$status != "alive") # create composite event
 
-## fit a linear mixed effects model
+## fit a multivariate mixed effects model
 multMixedFit <- mvglmer(list(log(serBilir) ~ year + (year | id),
                              spiders ~ year + (1 | id)), data = pbc2,
                         families = list(gaussian, binomial))
