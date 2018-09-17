@@ -28,7 +28,7 @@ newdata <- with(aids, data.frame(
   drug = gl(2, 80)
 ))
 
-# with the previous code, we will create the plot for increasing time from min time to max time and both drug and placebo. 
+# with the previous code, we will create the plot for increasing time from min time to max time and both drugs. 
 # Next, we obtain the predictions from the model, and we calculate the 95% confidence interval
 X <- model.matrix(~ obstime + obstime:drug, data = newdata)
 
