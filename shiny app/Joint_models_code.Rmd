@@ -38,7 +38,7 @@ newdata <- with(aids, data.frame(
   gender = rep(1,80)
 ))
 
-# with the previous code we will create the plot for increasing CD4 from min CD4 to max CD4, females, and both drug and placebo. 
+# with the previous code we will create the plot for increasing CD4 from min CD4 to max CD4, females, and both drugs. 
 # Next, we obtain the predictions from the model (these are in the log-hazard scale), and we calculate the 95% confidence interval
 X <- model.matrix(~ drug + gender + CD4, data = newdata)
 
