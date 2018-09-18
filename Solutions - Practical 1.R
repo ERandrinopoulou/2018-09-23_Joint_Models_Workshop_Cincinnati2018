@@ -37,7 +37,7 @@ intFact <- function(x, data) {
    cbind(x, "D-penicil" = x * (data$drug == "D-penicil"))
 }
 
-jointFit2.p1 <- update(jointFit.p1, transFun = intFact2)
+jointFit2.p1 <- update(jointFit.p1, transFun = intFact)
 
 ## summarize the results of the joint model
 summary(jointFit2.p1)
