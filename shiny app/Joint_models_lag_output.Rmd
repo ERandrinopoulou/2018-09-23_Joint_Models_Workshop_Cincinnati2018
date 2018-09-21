@@ -1,5 +1,5 @@
 ---
-title: "Different Parameterizationds in the Joint Model"
+title: "Different Parameterizations in the Joint Model"
 output: html_document
 ---
 
