@@ -6,13 +6,11 @@ myDF <- list("Introduction" = c("aids data set", "pbc2 data set"), "Linear Mixed
 
 library(shiny)
 library(shinyWidgets)
-#library(JMbayes)
+library(JMbayes)
 
-options(shiny.sanitize.errors = TRUE)
-
-#load("multJMFit.RData")
-#load("jointFit.RData")
-#load("multJMFitPractical.RData")
+load("multJMFit.RData")
+load("jointFit.RData")
+load("multJMFitPractical.RData")
 
 # Define UI for application that draws a histogram
 ui <-  fluidPage(   
@@ -35,7 +33,7 @@ ui <-  fluidPage(
         uiOutput("TimeVarSelection"),
         uiOutput("dynPredSelection"),
         conditionalPanel(condition = 'input.Chapter == "Dynamic Predictions"', uiOutput("obsChoose")),
-        conditionalPanel(condition = 'input.Chapter == "Practical 2 - extra" && input.Subselection == "Task 10"', uiOutput("obsChoosePractical"))
+        conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("obsChoosePractical"))
       )
     ),
     
@@ -46,34 +44,17 @@ ui <-  fluidPage(
                  uiOutput("codeJMparam"), uiOutput("codeJMshrink"), uiOutput("codeJM_TVeffect"), 
                  conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("codePred")),
                  conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("codePredMV")),
+                 #uiOutput("codePred"),
                  uiOutput("codeT12345"), uiOutput("codeT6"), uiOutput("codeT7"), uiOutput("codeT89"),
                  conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("codeT10"))
                  ), 
         tabPanel("Output", uiOutput("outputIntr"), uiOutput("outputMM"), uiOutput("outputRR"), uiOutput("outputJM"), 
                  uiOutput("outputJMparam"), uiOutput("outputJMshrink"), uiOutput("outputJM_TVeffect"), 
                  uiOutput("outputT12345"), uiOutput("outputT6"), uiOutput("outputT7"), uiOutput("outputT89"), 
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_1")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_2")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_3")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_4")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_5")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_6")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_7")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_8")),
-                 conditionalPanel(condition = 'input.Subselection == "Task 10"', uiOutput("outputT10_9")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_1")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_2")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_3")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_4")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_5")),
-                 conditionalPanel(condition = 'input.dynPred == "univariate"', uiOutput("DynPred_6")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_1")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_2")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_3")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_4")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_5")),
-                 conditionalPanel(condition = 'input.dynPred == "multivariate"', uiOutput("mvDynPred_6"))
-                 
+                 #plotOutput("MvDynPredPract"),
+                 conditionalPanel(condition = 'input.Chapter == "Practical 2 - extra"', plotOutput("MvDynPredPract")),
+                 conditionalPanel(condition = 'input.dynPred == "univariate"', plotOutput("DynPred")),
+                 conditionalPanel(condition = 'input.dynPred == "multivariate"', plotOutput("MvDynPred"))
                  )
         )
       )
@@ -89,7 +70,7 @@ ui <-  fluidPage(
 
 
 # Define server logic required to draw a histogram
-server2 <- function(input, output, session) {
+server <- function(input, output, session) {
   
   
   output$secondSelection <- renderUI({
@@ -132,34 +113,34 @@ server2 <- function(input, output, session) {
   })
   
   # Newdata patient for predictions
-  # ND <- reactive({
-  #   newPat <- pbc2[pbc2$id %in% c(8), ]
-  #   newPat
-  # })
-  # NDpract <- reactive({
-  #   newPat <- pbc2[pbc2$id %in% c(81), ]
-  #   newPat
-  # })
-  # 
+  ND <- reactive({
+    newPat <- pbc2[pbc2$id %in% c(8), ]
+    newPat
+  })
+  NDpract <- reactive({
+    newPat <- pbc2[pbc2$id %in% c(81), ]
+    newPat
+  })
+  
   
   # Observations to be used for predictions
   output$obsChoose <- renderUI({
-      # nd <- ND()
-      # nr <- nrow(nd)
-      #if (!is.null(nr) && nr > 1) {
+      nd <- ND()
+      nr <- nrow(nd)
+      if (!is.null(nr) && nr > 1) {
         sliderInput("obs", "Number of observations to use in prediction:",
-                    min = 2, max = 8 - 1, value = 2, step = 1, animate = TRUE)
-    #}
+                    min = 2, max = nr - 1, value = 2, step = 1, animate = TRUE)
+    }
   })
   
   output$obsChoosePractical <- renderUI({
-    #if (input$Chapter == "Practical 2 - extra") {
-      # ndPract <- NDpract()
-      # nr <- nrow(ndPract)
-      #if (!is.null(nr) && nr > 1) {
-        sliderInput("obsPractical", "Number of observations to use in prediction:", min = 2, max = 10 - 1, value = 2, step = 1, animate = TRUE)
-      #}
-   # }
+    if (input$Chapter == "Practical 2 - extra") {
+      ndPract <- NDpract()
+      nr <- nrow(ndPract)
+      if (!is.null(nr) && nr > 1) {
+        sliderInput("obsPractical", "Number of observations to use in prediction:", min = 2, max = nr - 1, value = 2, step = 1, animate = TRUE)
+      }
+    }
   })
   
   
@@ -360,120 +341,48 @@ server2 <- function(input, output, session) {
   
   ##################################################################  
   ### Univariate dynamic prediction plots
-  # sfit1 <- reactive({
-  #   nd <- ND()
-  #   sfit1t <- vector("list", nrow(nd))
-  #   for (i in 1:nrow(nd)){
-  #     ndNEW <- nd[1:i, ]
-  #     sfit1t[[i]] <- survfitJM(jointFit, newdata = ndNEW)
-  #   }
-  #   sfit1t
-  # })
-  # 
-  # output$DynPred <- renderPlot({
-  #    if (input$Chapter == "Dynamic Predictions"){
-  #        sfit1. <- sfit1()
-  #        nn <- if(is.na(input$obs)) length(sfit1.) else input$obs
-  #        dynPred <- plot(sfit1.[[nn]], include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
-  #             col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
-  #        dynPred
-  #     }
-  # 
-  # })
-  output$DynPred_1 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 2){
-      includeHTML("Joint_models_dynPred_output1.html")
+  sfit1 <- reactive({
+    nd <- ND()
+    sfit1t <- vector("list", nrow(nd))
+    for (i in 1:nrow(nd)){
+      ndNEW <- nd[1:i, ]
+      sfit1t[[i]] <- survfitJM(jointFit, newdata = ndNEW)
     }
+    sfit1t
   })
   
-  output$DynPred_2 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 3){
-      includeHTML("Joint_models_dynPred_output2.html")
-    }
+  output$DynPred <- renderPlot({
+     if (input$Chapter == "Dynamic Predictions"){
+         sfit1. <- sfit1()
+         nn <- if(is.na(input$obs)) length(sfit1.) else input$obs
+         dynPred <- plot(sfit1.[[nn]], include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+              col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+         dynPred
+      }
+
   })
   
-  output$DynPred_3 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions"  && input$obs == 4){
-      includeHTML("Joint_models_dynPred_output3.html")
-    }
-  })
-  
-  output$DynPred_4 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 5){
-      includeHTML("Joint_models_dynPred_output4.html")
-    }
-  })
-  
-  output$DynPred_5 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 6){
-      includeHTML("Joint_models_dynPred_output5.html")
-    }
-  })
-  
-  output$DynPred_6 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 7){
-      includeHTML("Joint_models_dynPred_output6.html")
-    }
-  })
   
   ### Multivariate dynamic prediction plots
-  # sfit2 <- reactive({
-  #   nd <- ND()
-  #   sfit2t <- vector("list", nrow(nd))
-  #   for (i in 1:nrow(nd)){
-  #     ndNEW <- nd[1:i, ]
-  #     sfit2t[[i]] <- survfitJM(multJMFit, newdata = ndNEW)
-  #   }
-  #   sfit2t
-  # })
-  # 
-  # output$MvDynPred <- renderPlot({
-  #     if (input$Chapter == "Dynamic Predictions"){
-  #       sfits2. <- sfit2()
-  #       nn <- if(is.na(input$obs)) length(sfits2.) else input$obs
-  #       MVdynPred <- plot(sfits2.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
-  #             col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
-  #       MVdynPred
-  #     }
-  # })
-  
-  output$mvDynPred_1 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 2){
-      includeHTML("Joint_models_MVdynPred_output1.html")
+  sfit2 <- reactive({
+    nd <- ND()
+    sfit2t <- vector("list", nrow(nd))
+    for (i in 1:nrow(nd)){
+      ndNEW <- nd[1:i, ]
+      sfit2t[[i]] <- survfitJM(multJMFit, newdata = ndNEW)
     }
+    sfit2t
   })
   
-  output$mvDynPred_2 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 3){
-      includeHTML("Joint_models_MVdynPred_output2.html")
-    }
+  output$MvDynPred <- renderPlot({
+      if (input$Chapter == "Dynamic Predictions"){
+        sfits2. <- sfit2()
+        nn <- if(is.na(input$obs)) length(sfits2.) else input$obs
+        MVdynPred <- plot(sfits2.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+              col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+        MVdynPred
+      }
   })
-  
-  output$mvDynPred_3 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions"  && input$obs == 4){
-      includeHTML("Joint_models_MVdynPred_output3.html")
-    }
-  })
-  
-  output$mvDynPred_4 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 5){
-      includeHTML("Joint_models_MVdynPred_output4.html")
-    }
-  })
-  
-  output$mvDynPred_5 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 6){
-      includeHTML("Joint_models_MVdynPred_output5.html")
-    }
-  })
-  
-  output$mvDynPred_6 <- reactive({ 
-    if (input$Chapter == "Dynamic Predictions" && input$obs == 7){
-      includeHTML("Joint_models_MVdynPred_output6.html")
-    }
-  })
-  
-
   
   #############################################
   
@@ -499,76 +408,30 @@ server2 <- function(input, output, session) {
   })
   
   ### Multivariate dynamic prediction plots Practical
-  # sfitPract <- reactive({
-  #   ndPract <- NDpract()
-  #   sfitt <- vector("list", nrow(ndPract))
-  #   for (i in 1:nrow(ndPract)){
-  #     ndNEWPract <- ndPract[1:i, ]
-  #     sfitt[[i]] <- survfitJM(multJMFitPractical, newdata = ndNEWPract)
-  #   }
-  #   sfitt
-  # })
-  # 
-  # output$MvDynPredPract <- renderPlot({
-  #   if (input$Subselection == "Task 10"){
-  #      sfitPract. <- sfitPract()
-  #      nn <- if(is.na(input$obsPractical)) length(sfitPract.) else input$obsPractical
-  #      dynPred <- plot(sfitPract.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
-  #                      col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
-  #      dynPred
-  #   }
-  #})
-
-  output$outputT10_1 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" &&  input$obsPractical == 2){
-     includeHTML("T10_output1.html")
-   }
+  sfitPract <- reactive({
+    ndPract <- NDpract()
+    sfitt <- vector("list", nrow(ndPract))
+    for (i in 1:nrow(ndPract)){
+      ndNEWPract <- ndPract[1:i, ]
+      sfitt[[i]] <- survfitJM(multJMFitPractical, newdata = ndNEWPract)
+    }
+    sfitt
   })
   
-  output$outputT10_2 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 3){
-      includeHTML("T10_output2.html")
+  output$MvDynPredPract <- renderPlot({
+    if (input$Subselection == "Task 10"){
+       sfitPract. <- sfitPract()
+       nn <- if(is.na(input$obsPractical)) length(sfitPract.) else input$obsPractical
+       dynPred <- plot(sfitPract.[[nn]], split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16,
+                       col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
+       dynPred
     }
   })
   
-  output$outputT10_3 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 4){
-      includeHTML("T10_output3.html")
-    }
-  })
   
-  output$outputT10_4 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra"  && input$obsPractical == 5){
-      includeHTML("T10_output4.html")
-    }
-  })
-  
-  output$outputT10_5 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 6){
-      includeHTML("T10_output5.html")
-    }
-  })
-  
-  output$outputT10_6 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 7){
-      includeHTML("T10_output6.html")
-    }
-  })
-  
-  output$outputT10_7 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 8){
-      includeHTML("T10_output7.html")
-    }
-  })
-  
-  output$outputT10_8 <- reactive({ 
-    if (input$Chapter == "Practical 2 - extra" && input$obsPractical == 9){
-      includeHTML("T10_output8.html")
-    }
-  })
   
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server2)
+shinyApp(ui = ui, server = server)
 
