@@ -1,0 +1,25 @@
+---
+title: "Predictions"
+output: html_document
+---
+
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+
+## load packages
+library("JMbayes")
+
+load("multJMFit.RData")
+## select patient 8 to predict
+  ND <- pbc2[pbc2$id %in% c(8), ]
+
+N <- nrow(ND)
+dyn_sprobs <- vector("list", N)
+i=4
+  dyn_sprobs[[i]] <- survfitJM(multJMFit,ND[1:i,], 
+                               survTimes = seq(0, 14, length.out = 85))
+  plot(dyn_sprobs[[i]], split = c(2, 1), surv_in_all = TRUE)
+
+
+```

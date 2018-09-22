@@ -1,0 +1,28 @@
+---
+title: "T10"
+output: html_document
+---
+
+
+```{r introduction, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+## load packages
+library(JMbayes)
+
+
+load("multJMFitPractical.RData")
+
+
+  NDpract <- pbc2[pbc2$id %in% c(81), ]
+
+N <- nrow(NDpract)
+dyn_sprobs <- vector("list", N)
+
+## use a for-loop to update predictions of patient 81 when an extra visit is available
+i <- 5
+  dyn_sprobs[[i]] <- survfitJM(multJMFitPractical, NDpract[1:i, ], 
+                               survTimes = seq(0, 14, length.out = 85))
+  plot(dyn_sprobs[[i]], split = c(2, 1), surv_in_all = TRUE)
+
+
+
+```
