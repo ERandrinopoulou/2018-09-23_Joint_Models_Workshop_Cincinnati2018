@@ -1,0 +1,17 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
+nlme
+survival
+foreach
+iterators
+parallel
+doParallel
+ggplot2
+StanHeaders
+rstan
+JMbayes

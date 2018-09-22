@@ -1,0 +1,10 @@
+base
+nlme
+survival
+foreach
+iterators
+doParallel
+ggplot2
+StanHeaders
+rstan
+JMbayes
