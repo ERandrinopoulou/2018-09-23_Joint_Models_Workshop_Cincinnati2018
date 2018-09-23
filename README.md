@@ -32,3 +32,5 @@ To run the app you will need to run the following:
 ```r
 runGitHub("JointModelsWorkshopCincinnati2018", "ERandrinopoulou", subdir = "shiny app/")
  ```
+
+You can also get the app from: https://emcbiostatistics.shinyapps.io/Joint_Models_Workshop_Cincinnati2018/
