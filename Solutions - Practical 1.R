@@ -66,7 +66,7 @@ jointFit5.p1 <- update(jointFit2.p1, lmeObject = lmeFit2.p1,
 anova(jointFit5.p1, jointFit2.p1)
 
 # T9
-## obtain the data of Patient 155
+## obtain the data of Patient 5
 dataP5 <- pbc2[pbc2$id == 5, ]
 
 # T10

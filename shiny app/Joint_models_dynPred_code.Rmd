@@ -29,7 +29,7 @@ newPat <- pbc2[pbc2$id %in% c(8), ]
 for (i in 1:dim(newPat)[1]){
   newPatPred <- newPat[1:i,]
   sfit <- survfitJM(jointFit, newdata = newPatPred)
-  plot(sfit, split = c(2, 1), include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16, 
+  plot(sfit, include.y = TRUE, estimator = "mean", conf.int = TRUE, fill.area = TRUE, lwd = 3, pch = 16, 
        col.abline = "black", col.area = "grey", col.points = "black", cex.axis.z = 1, cex.lab.z = 1)
 }
 

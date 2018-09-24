@@ -28,7 +28,7 @@ Forms <- list("log(serBilir)" = "value",
                                indFixed = 1:2, indRandom = 1, name = "area"))
 
 ## interaction argument
-Ints <- list("log(serBilir)" = ~ drug, "log(serBilir)_slope" = ~ drug,
+Ints <- list("log(serBilir)_value" = ~ drug, "log(serBilir)_slope" = ~ drug,
              "spiders_area" = ~ drug)
 
 ## fit a multivariate joint model
